@@ -173,6 +173,7 @@ def run(args) -> dict:
             client, rpc = rpc_client(store, limits)
             with client:
                 result = {"offline": result, **live_verify(store, rpc, args.release)}
+            result.update(http_attempts=client.requests, downloaded_bytes=client.downloaded)
         return result
     if args.command == "published-legs":
         return {"economic_legs": published_legs(store, args.max_temp_bytes)}

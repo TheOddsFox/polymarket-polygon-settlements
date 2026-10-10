@@ -71,3 +71,17 @@ The test suite uses synthetic offline source fixtures and adapted economic regre
 Decoder and normalizer mechanisms and economic regression cases are adapted from the MIT-licensed `hypertrial/oddsfox-pipeline`; no runtime dependency or state migration is introduced. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Pinned ABI/semantic reference: [Polymarket CTF Exchange V2](https://github.com/Polymarket/ctf-exchange-v2/tree/ccc0596074f4dfd62c944fbca4de252893b82b4b). Solidity source is not vendored. Current deployment boundaries: [official contracts documentation](https://docs.polymarket.com/resources/contracts).
+
+## Repeatable live smoke test
+
+Run from this repository after `uv sync --locked`. This is opt-in; ordinary tests and CI stay offline.
+
+```sh
+POLYGON_RPC_URL=https://polygon-bor-rpc.publicnode.com uv run --locked python -m polymarket_polygon_settlements.smoke --events-report /absolute/path/to/events/report.json --blocks 20
+```
+
+Every invocation creates a fresh ignored `data/smoke/<uuid>` root and prints the absolute `report.json` path. Use `--output <fresh-path>` to name a run. Never reuse an output directory. Reports retain the steps, measured requests/bytes, configured limits and coverage. Failed/timed-out commands make `accounting_complete` false; their totals are known lower bounds. No paid requests are made. Run the events smoke first and pass its report to the consumers; consumers validate and pin its metadata bundle. Select an explicit currently active, unambiguous market when the example market closes.
+
+A pass requires chain proof, an entirely finalized finite interval, nonempty economic legs, resume, offline replay, publication and live hash verification. Empty intervals fail explicitly because they do not test fill decoding; choose a more active usable CTF market or use `--blocks 100`. The standard exchange is tested. Protocol V2 positions are rejected. Discovery allows 5 attempts/1 MiB; plan/scan allow 100 attempts/8 MiB each, and live verification allows 20 attempts/256 MiB. Retained acquisition storage is capped at 64 MiB.
+
+Free public RPC availability varies. On 2026-10-10 publicnode accepted a 20-block scan but rejected a 100-block request as requiring archive access; other free endpoints rejected historical proof calls. These are failures, not zero-volume evidence. `POLYGON_RPC_URL` may select another public HTTPS endpoint; the report never includes it. Without nonempty legs this repository's live economic normalization remains unverified.
