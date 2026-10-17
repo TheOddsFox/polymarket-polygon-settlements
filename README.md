@@ -17,7 +17,7 @@ Python 3.12 is required. The installed CLI runs outside this checkout. `--root` 
 
 ## Plan → scan → build → publish
 
-First use the events repository's targeted metadata export. Keep the output `manifest_sha256` as the trusted digest supplied to this consumer. Plans pin and validate a local immutable copy; later producer cleanup cannot break replay.
+First use the events repository's targeted metadata refresh. Keep the output `manifest_sha256` as the trusted digest supplied to this consumer. Plans pin and validate a local immutable copy; later producer cleanup cannot break replay.
 
 Set `POLYGON_RPC_URL` to an explicit standard-port HTTPS endpoint with historical `eth_call`, finalized block tags and EIP-1898 block-hash queries enabled. Supply credentials through the environment; the CLI does not load `.env`, store the endpoint or echo provider error messages. HTTPS redirects, ambient proxies and non-public destinations are refused.
 
